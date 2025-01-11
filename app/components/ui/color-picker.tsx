@@ -22,7 +22,7 @@ import type {
 
 export type ColorPickerProps = Pick<
   ReactAriaColorPickerProps,
-  "defaultValue"
+  "defaultValue" | "value"
 > & {
   onChange?: (value: string) => void;
   label: string;
@@ -37,7 +37,11 @@ export function ColorPicker(props: ColorPickerProps) {
   );
 
   return (
-    <ReactAriaColorPicker defaultValue={props.defaultValue} onChange={onChange}>
+    <ReactAriaColorPicker
+      value={props.value}
+      defaultValue={props.defaultValue}
+      onChange={onChange}
+    >
       <DialogTrigger>
         <Button className="flex w-full items-center justify-between outline-none">
           <span>{props.label}</span>

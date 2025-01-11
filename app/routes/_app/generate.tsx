@@ -12,6 +12,10 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { ColorPicker } from "~/components/ui/color-picker";
 import {
+  ColorSwatchPicker,
+  LinearGradientColorSwatchPicker,
+} from "~/components/ui/color-swatch-picker";
+import {
   Form,
   FormControl,
   FormField,
@@ -432,6 +436,58 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                   </FormItem>
                 )}
               />
+
+              {backgroundType === "solid" && (
+                <ColorSwatchPicker
+                  onChange={(color) => {
+                    form.setValue("background-color", color);
+                  }}
+                  colors={[
+                    "#dc2626",
+                    "#ea580c",
+                    "#14b8a6",
+                    "#06b6d4",
+                    "#3b82f6",
+                    "#8b5cf6",
+                    "#a855f7",
+                    "#d946ef",
+                    "#ec4899",
+                    "#e11d48",
+                    "#10b981",
+                    "#65a30d",
+                    "#f59e0b",
+                    "#d97706",
+                    "#713f12",
+                    "#334155",
+                    "#6b7280",
+                  ]}
+                />
+              )}
+
+              {backgroundType === "linear-gradient" && (
+                <LinearGradientColorSwatchPicker
+                  onChange={(color) => {
+                    form.setValue("background-color", color.start);
+                    form.setValue("background-color-end", color.end);
+                  }}
+                  colors={[
+                    { start: "#a78bfa", end: "#d8b4fe" },
+                    { start: "#d946ef", end: "#f43f5e" },
+                    { start: "#f59e0b", end: "#facc15" },
+                    { start: "#93c5fd", end: "#3730a3" },
+                    { start: "#9ca3af", end: "#374151" },
+                    { start: "#171717", end: "#a3a3a3" },
+                    { start: "#3b82f6", end: "#14b8a6" },
+                    { start: "#bae6fd", end: "#38bdf8" },
+                    { start: "#93c5fd", end: "#a855f7" },
+                    { start: "#ef4444", end: "#f97316" },
+                    { start: "#cbd5e1", end: "#44403c" },
+                    { start: "#4ade80", end: "#0d9488" },
+                    { start: "#fecdd3", end: "#db2777" },
+                  ]}
+                />
+              )}
+
               <FormField
                 control={form.control}
                 name="background-color"
@@ -439,7 +495,7 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                   <FormItem>
                     <ColorPicker
                       label={`${backgroundType === "linear-gradient" ? "Color Start" : "Color"}`}
-                      defaultValue={field.value}
+                      value={field.value}
                       onChange={field.onChange}
                     />
 
@@ -456,7 +512,7 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                     <FormItem>
                       <ColorPicker
                         label="Color End"
-                        defaultValue={field.value}
+                        value={field.value}
                         onChange={field.onChange}
                       />
                       <FormMessage />
