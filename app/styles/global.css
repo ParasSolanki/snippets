@@ -61,6 +61,7 @@ html {
   font-family: var(--font-family);
   background-color: var(--bg);
   color: var(--fg);
+  box-shadow: var(--shadow);
 }
 
 [data-editor-space] {

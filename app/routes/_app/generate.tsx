@@ -32,6 +32,7 @@ import { cn } from "~/lib/utils";
 import { Canvg } from "canvg";
 import html2canvas from "html2canvas-pro";
 import * as React from "react";
+import { parseColor } from "react-aria-components";
 import { useForm, useWatch } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -62,6 +63,22 @@ const MIN_PADDING_Y = 10;
 const MAX_PADDING_X = 200;
 const MIN_PADDING_X = 10;
 
+const MAX_SHADOW_OPACITY = 1;
+const MIN_SHADOW_OPACITY = 0;
+const STEP_SHADOW_OPACITY = 0.01;
+
+const MAX_SHADOW_OFFSET_X = 100;
+const MIN_SHADOW_OFFSET_X = 0;
+
+const MAX_SHADOW_OFFSET_Y = 100;
+const MIN_SHADOW_OFFSET_Y = 0;
+
+const MAX_SHADOW_BLUR = 100;
+const MIN_SHADOW_BLUR = 0;
+
+const MAX_SHADOW_SPREAD = 100;
+const MIN_SHADOW_SPREAD = 0;
+
 const formSchema = z.object({
   theme: z.string().min(2, {
     message: "theme must be at least 2 characters.",
@@ -91,14 +108,23 @@ const formSchema = z.object({
     message: "layout-padding-x must be at least 2 characters.",
   }),
   shadow: z.boolean(),
+  "shadow-color": z.string().min(2, {
+    message: "shadow-color must be at least 2 characters.",
+  }),
   "shadow-opacity": z.number().min(2, {
     message: "shadow-opacity must be at least 2 characters.",
+  }),
+  "shadow-offset-x": z.number().min(2, {
+    message: "shadow-offset-x must be at least 2 characters.",
   }),
   "shadow-offset-y": z.number().min(2, {
     message: "shadow-offset-y must be at least 2 characters.",
   }),
   "shadow-blur": z.number().min(2, {
     message: "shadow-blur must be at least 2 characters.",
+  }),
+  "shadow-spread": z.number().min(2, {
+    message: "shadow-spread must be at least 2 characters.",
   }),
   "font-family": z.string().min(2, {
     message: "font-family must be at least 2 characters.",
@@ -124,9 +150,12 @@ function GeneratePage() {
       "layout-padding-y": 30,
       "layout-padding-x": 30,
       shadow: false,
-      "shadow-opacity": 0,
-      "shadow-offset-y": 0,
-      "shadow-blur": 0,
+      "shadow-color": "hsla(23, 100%, 50%, 1)",
+      "shadow-opacity": 0.5,
+      "shadow-offset-y": 10,
+      "shadow-offset-x": 10,
+      "shadow-blur": 10,
+      "shadow-spread": 10,
       "font-family": "ibm-plex-mono",
       "font-size": 0,
     },
@@ -141,6 +170,21 @@ function GeneratePage() {
   const backgroundDirection = form.watch("background-direction");
   const language = form.watch("language");
   const theme = form.watch("theme");
+
+  const showShadow = form.watch("shadow");
+
+  const shadowColor = form.watch("shadow-color");
+  const shadowOpacity = form.watch("shadow-opacity");
+  const shadowOffsetX = form.watch("shadow-offset-x");
+  const shadowOffsetY = form.watch("shadow-offset-y");
+  const shadowBlur = form.watch("shadow-blur");
+  const shadowSpread = form.watch("shadow-spread");
+
+  const parsedShadowColor = parseColor(shadowColor);
+
+  const shadow = showShadow
+    ? `hsla(${parsedShadowColor.getChannelValue("hue")}, ${parsedShadowColor.getChannelValue("saturation")}%, ${parsedShadowColor.getChannelValue("lightness")}%, ${shadowOpacity}) ${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowSpread}px`
+    : "";
 
   async function handleClick() {
     if (!editorRef.current) return;
@@ -202,11 +246,11 @@ function GeneratePage() {
                     backgroundType === "linear-gradient"
                       ? backgroundColorEnd
                       : "",
-
                   "--tw-gradient-position":
                     backgroundType === "linear-gradient"
                       ? `${backgroundDirection}deg in hsl,`
                       : "",
+                  "--shadow": showShadow ? shadow : "",
                 } as React.CSSProperties
               }
             >
@@ -266,6 +310,10 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
   const backgroundType = useWatch({
     control: form.control,
     name: "background-type",
+  });
+  const showShadow = useWatch({
+    control: form.control,
+    name: "shadow",
   });
 
   return (
@@ -531,63 +579,150 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="shadow-opacity"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Opacity</FormLabel>
-                    <FormControl>
-                      <Slider
-                        defaultValue={[field.value]}
-                        max={100}
-                        step={1}
-                        onValueChange={field.onChange}
-                      />
-                    </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shadow-offset-y"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Offset Y</FormLabel>
-                    <FormControl>
-                      <Slider
-                        defaultValue={[field.value]}
-                        max={100}
-                        step={1}
-                        onValueChange={field.onChange}
-                      />
-                    </FormControl>
+              {showShadow && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="shadow-color"
+                    render={({ field }) => (
+                      <FormItem>
+                        <ColorPicker
+                          label="Color"
+                          defaultValue={field.value}
+                          onChange={field.onChange}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shadow-opacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Opacity</FormLabel>
+                          <span className="text-muted-foreground text-sm">
+                            {field.value}
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            defaultValue={[field.value]}
+                            max={MAX_SHADOW_OPACITY}
+                            min={MIN_SHADOW_OPACITY}
+                            step={STEP_SHADOW_OPACITY}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="shadow-blur"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Blur</FormLabel>
-                    <FormControl>
-                      <Slider
-                        defaultValue={[field.value]}
-                        max={100}
-                        step={1}
-                        onValueChange={field.onChange}
-                      />
-                    </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shadow-offset-x"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Offset X</FormLabel>
+                          <span className="text-muted-foreground text-sm">
+                            {field.value}px
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            defaultValue={[field.value]}
+                            max={MAX_SHADOW_OFFSET_X}
+                            min={MIN_SHADOW_OFFSET_X}
+                            step={1}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shadow-offset-y"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Offset Y</FormLabel>
+                          <span className="text-muted-foreground text-sm">
+                            {field.value}px
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            defaultValue={[field.value]}
+                            max={MAX_SHADOW_OFFSET_Y}
+                            min={MIN_SHADOW_OFFSET_Y}
+                            step={1}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shadow-blur"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Blur</FormLabel>
+                          <span className="text-muted-foreground text-sm">
+                            {field.value}px
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            defaultValue={[field.value]}
+                            max={MAX_SHADOW_BLUR}
+                            min={MIN_SHADOW_BLUR}
+                            step={1}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="shadow-spread"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Spread</FormLabel>
+                          <span className="text-muted-foreground text-sm">
+                            {field.value}px
+                          </span>
+                        </div>
+                        <FormControl>
+                          <Slider
+                            defaultValue={[field.value]}
+                            max={MAX_SHADOW_SPREAD}
+                            min={MIN_SHADOW_SPREAD}
+                            step={1}
+                            onValueChange={field.onChange}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="font">
