@@ -79,6 +79,16 @@ const MIN_SHADOW_BLUR = 0;
 const MAX_SHADOW_SPREAD = 100;
 const MIN_SHADOW_SPREAD = 0;
 
+const FONT_FAMILY_OPTIONS = [
+  { name: "IBM Plex Mono", value: "ibm-plex-mono-font-family" },
+  { name: "Geist Mono", value: "geist-mono-font-family" },
+  { name: "Monospace", value: "monospace-font-family" },
+];
+
+const MIN_FONT_SIZE = 16;
+const MAX_FONT_SIZE = 24;
+const STEP_FONT_SIZE = 1;
+
 const formSchema = z.object({
   theme: z.string().min(2, {
     message: "theme must be at least 2 characters.",
@@ -156,8 +166,8 @@ function GeneratePage() {
       "shadow-offset-x": 10,
       "shadow-blur": 10,
       "shadow-spread": 10,
-      "font-family": "ibm-plex-mono",
-      "font-size": 0,
+      "font-family": "ibm-plex-mono-font-family",
+      "font-size": 16,
     },
   });
 
@@ -185,6 +195,9 @@ function GeneratePage() {
   const shadow = showShadow
     ? `hsla(${parsedShadowColor.getChannelValue("hue")}, ${parsedShadowColor.getChannelValue("saturation")}%, ${parsedShadowColor.getChannelValue("lightness")}%, ${shadowOpacity}) ${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowSpread}px`
     : "";
+
+  const fontFamily = form.watch("font-family");
+  const fontSize = form.watch("font-size");
 
   async function handleClick() {
     if (!editorRef.current) return;
@@ -251,6 +264,8 @@ function GeneratePage() {
                       ? `${backgroundDirection}deg in hsl,`
                       : "",
                   "--shadow": showShadow ? shadow : "",
+                  "--font-family": `var(--${fontFamily})`,
+                  "--font-size": `${fontSize}px`,
                 } as React.CSSProperties
               }
             >
@@ -744,10 +759,11 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="ibm-plex-mono">
-                          IBM Plex Mono
-                        </SelectItem>
-                        <SelectItem value="geist-mono">Geist Mono</SelectItem>
+                        {FONT_FAMILY_OPTIONS.map((font) => (
+                          <SelectItem key={font.value} value={font.value}>
+                            {font.name}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
 
@@ -761,12 +777,18 @@ export function SnippetForm({ form }: { form: GenerateForm }) {
                 name="font-size"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Size</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Size</FormLabel>
+                      <span className="text-muted-foreground text-sm">
+                        {field.value}px
+                      </span>
+                    </div>
                     <FormControl>
                       <Slider
                         defaultValue={[field.value]}
-                        max={100}
-                        step={1}
+                        max={MAX_FONT_SIZE}
+                        min={MIN_FONT_SIZE}
+                        step={STEP_FONT_SIZE}
                         onValueChange={field.onChange}
                       />
                     </FormControl>

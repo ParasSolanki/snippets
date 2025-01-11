@@ -44,6 +44,10 @@
   --geist-mono-font-family: "Geist Mono";
 }
 
+* {
+  border-color: var(--color-border);
+}
+
 html {
   color-scheme: dark;
 }
@@ -54,11 +58,10 @@ html {
   --width: calc(var(--padding-left) + 1rem + var(--padding-right));
   --tab-size: 4;
   --line-height: 1.5;
-  --font-size: 1rem;
-  --font-family: var(--default-font-family);
+
+  font-family: var(--font-family);
   line-height: var(--line-height);
   font-size: var(--font-size);
-  font-family: var(--font-family);
   background-color: var(--bg);
   color: var(--fg);
   box-shadow: var(--shadow);
