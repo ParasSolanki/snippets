@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "~/components/footer";
 import { Header } from "~/components/header";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: IndexPage,
@@ -23,9 +24,15 @@ function IndexPage() {
                   Create beautiful code snippets in language of your choice and
                   share it with your friends
                 </p>
-                <Button size="lg" className="mx-auto max-w-fit text-lg">
-                  Create
-                </Button>
+                <Link
+                  to="/generate"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "mx-auto max-w-fit text-lg",
+                  )}
+                >
+                  Create Snippet
+                </Link>
               </section>
             </div>
           </div>
