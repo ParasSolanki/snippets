@@ -1,8 +1,4 @@
-import {
-  createRootRoute,
-  Outlet,
-  ScrollRestoration,
-} from "@tanstack/react-router";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { Meta, Scripts } from "@tanstack/start";
 import { DefaultCatchBoundary } from "~/components/default-catch-boundary";
 import { NotFound } from "~/components/not-found";
@@ -110,7 +106,6 @@ function RootDocument({ children }: Readonly<{ children: React.ReactNode }>) {
       </head>
       <body className="bg-background text-foreground selection:bg-primary antialiased selection:text-white/90">
         {children}
-        <ScrollRestoration />
         <Scripts />
       </body>
     </html>
