@@ -32,7 +32,7 @@ export function ColorSwatchPicker({
         <ColorSwatchPickerItem
           key={`${color}-${index}`}
           color={color}
-          className="data-selected:after:outline-accent-foreground data-selected:after:border-border relative w-fit rounded-md forced-color-adjust-none outline-none data-selected:after:absolute data-selected:after:inset-0 data-selected:after:rounded-[inherit] data-selected:after:border-2 data-selected:after:outline-2 data-selected:after:outline-offset-[-2px]"
+          className="data-selected:after:outline-accent-foreground data-selected:after:border-border data-focus-visible:outline-accent-foreground relative w-fit rounded-md forced-color-adjust-none not-data-focus-visible:outline-none data-focus-visible:outline-2 data-focus-visible:outline-offset-2 data-selected:after:absolute data-selected:after:inset-0 data-selected:after:rounded-[inherit] data-selected:after:border-2 data-selected:after:outline-2 data-selected:after:outline-offset-[-2px]"
         >
           <ColorSwatch className="inset-0 size-5 rounded-md shadow" />
         </ColorSwatchPickerItem>
@@ -58,6 +58,9 @@ export function LinearGradientColorSwatchPicker({
   const [selectedColorIndex, setSelectedColorIndex] = React.useState<
     number | undefined
   >(undefined);
+  const [focusedColorIndex, setFocusedColorIndex] = React.useState<
+    number | undefined
+  >(undefined);
 
   const _colors = React.useMemo(() => {
     return colors.map((color) => {
@@ -77,6 +80,8 @@ export function LinearGradientColorSwatchPicker({
 
       onChange(color);
       setSelectedColorIndex(index);
+
+      setFocusedColorIndex(index);
     },
     [onChange, _colors],
   );
@@ -93,22 +98,28 @@ export function LinearGradientColorSwatchPicker({
           key={index}
           color={color}
           selected={selectedColorIndex === index}
+          focused={focusedColorIndex === index}
           onSelect={() => handleOnChange(index)}
           onKeyDown={(e) => {
             if (selectedColorIndex === undefined) return;
-            if (e.key === "Enter") handleOnChange(index);
+            if (e.key === "Enter")
+              handleOnChange(
+                focusedColorIndex !== undefined && index !== focusedColorIndex
+                  ? focusedColorIndex
+                  : index,
+              );
             else if (e.key === "ArrowRight") {
-              handleOnChange(
-                selectedColorIndex === _colors.length - 1
-                  ? 0
-                  : selectedColorIndex + 1,
-              );
+              setFocusedColorIndex((prevIndex) => {
+                if (prevIndex === undefined) return 0;
+                if (prevIndex === _colors.length - 1) return 0;
+                return prevIndex + 1;
+              });
             } else if (e.key === "ArrowLeft") {
-              handleOnChange(
-                selectedColorIndex === 0
-                  ? _colors.length - 1
-                  : selectedColorIndex - 1,
-              );
+              setFocusedColorIndex((prevIndex) => {
+                if (prevIndex === undefined) return 0;
+                if (prevIndex === 0) return _colors.length - 1;
+                return prevIndex - 1;
+              });
             }
           }}
         />
@@ -120,11 +131,13 @@ export function LinearGradientColorSwatchPicker({
 function LinearGradientColorSwatchPickerItem({
   color,
   selected,
+  focused,
   onSelect,
   onKeyDown,
 }: {
   color: LinearGradientColor;
   selected: boolean;
+  focused: boolean;
   onSelect: () => void;
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>) => void;
 }) {
@@ -135,7 +148,8 @@ function LinearGradientColorSwatchPickerItem({
       aria-label=""
       aria-selected={selected ? true : undefined}
       data-selected={selected ? true : undefined}
-      className="data-selected:after:outline-accent-foreground data-selected:after:border-border relative w-fit rounded-md forced-color-adjust-none outline-none data-selected:after:absolute data-selected:after:inset-0 data-selected:after:rounded-[inherit] data-selected:after:border-2 data-selected:after:outline-2 data-selected:after:outline-offset-[-2px]"
+      data-focus-visible={focused ? true : undefined}
+      className="data-selected:after:outline-accent-foreground data-focus-visible:outline-accent-foreground data-selected:after:border-border relative w-fit rounded-md forced-color-adjust-none not-data-focus-visible:outline-none data-focus-visible:outline-2 data-focus-visible:outline-offset-2 data-selected:after:absolute data-selected:after:inset-0 data-selected:after:rounded-[inherit] data-selected:after:border-2 data-selected:after:outline-2 data-selected:after:outline-offset-[-2px]"
       onClick={() => onSelect()}
       onKeyDown={(e) => onKeyDown(e)}
     >

@@ -228,6 +228,10 @@ function GeneratePage() {
     control: form.control,
     name: "shadow-offset-x",
   });
+  const shadowOffsetY = useWatch({
+    control: form.control,
+    name: "shadow-offset-y",
+  });
   const shadowBlur = useWatch({
     control: form.control,
     name: "shadow-blur",
@@ -312,7 +316,7 @@ function GeneratePage() {
                       : "",
                   "--tw-gradient-position":
                     backgroundType === "linear-gradient"
-                      ? `${backgroundDirection}deg in hsl,`
+                      ? `${backgroundDirection}deg in hsl`
                       : "",
                   "--shadow": showShadow ? shadow : "",
                   "--font-family": `var(--${fontFamily})`,
