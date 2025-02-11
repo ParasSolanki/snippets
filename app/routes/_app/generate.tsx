@@ -175,33 +175,80 @@ function GeneratePage() {
     },
   });
 
-  const paddingY = form.watch("layout-padding-y");
-  const paddingX = form.watch("layout-padding-x");
-  const width = form.watch("layout-width");
-  const backgroundType = form.watch("background-type");
-  const backgroundColor = form.watch("background-color");
-  const backgroundColorEnd = form.watch("background-color-end");
-  const backgroundDirection = form.watch("background-direction");
-  const language = form.watch("language");
-  const theme = form.watch("theme");
+  const paddingY = useWatch({
+    control: form.control,
+    name: "layout-padding-y",
+  });
+  const paddingX = useWatch({
+    control: form.control,
+    name: "layout-padding-x",
+  });
+  const width = useWatch({
+    control: form.control,
+    name: "layout-width",
+  });
+  const backgroundType = useWatch({
+    control: form.control,
+    name: "background-type",
+  });
+  const backgroundColor = useWatch({
+    control: form.control,
+    name: "background-color",
+  });
+  const backgroundColorEnd = useWatch({
+    control: form.control,
+    name: "background-color-end",
+  });
+  const backgroundDirection = useWatch({
+    control: form.control,
+    name: "background-direction",
+  });
+  const language = useWatch({
+    control: form.control,
+    name: "language",
+  });
+  const theme = useWatch({
+    control: form.control,
+    name: "theme",
+  });
+  const showShadow = useWatch({
+    control: form.control,
+    name: "shadow",
+  });
 
-  const showShadow = form.watch("shadow");
-
-  const shadowColor = form.watch("shadow-color");
-  const shadowOpacity = form.watch("shadow-opacity");
-  const shadowOffsetX = form.watch("shadow-offset-x");
-  const shadowOffsetY = form.watch("shadow-offset-y");
-  const shadowBlur = form.watch("shadow-blur");
-  const shadowSpread = form.watch("shadow-spread");
-
+  const shadowColor = useWatch({
+    control: form.control,
+    name: "shadow-color",
+  });
+  const shadowOpacity = useWatch({
+    control: form.control,
+    name: "shadow-opacity",
+  });
+  const shadowOffsetX = useWatch({
+    control: form.control,
+    name: "shadow-offset-x",
+  });
+  const shadowBlur = useWatch({
+    control: form.control,
+    name: "shadow-blur",
+  });
+  const shadowSpread = useWatch({
+    control: form.control,
+    name: "shadow-spread",
+  });
+  const fontFamily = useWatch({
+    control: form.control,
+    name: "font-family",
+  });
+  const fontSize = useWatch({
+    control: form.control,
+    name: "font-size",
+  });
   const parsedShadowColor = parseColor(shadowColor);
 
   const shadow = showShadow
     ? `hsla(${parsedShadowColor.getChannelValue("hue")}, ${parsedShadowColor.getChannelValue("saturation")}%, ${parsedShadowColor.getChannelValue("lightness")}%, ${shadowOpacity}) ${shadowOffsetX}px ${shadowOffsetY}px ${shadowBlur}px ${shadowSpread}px`
     : "";
-
-  const fontFamily = form.watch("font-family");
-  const fontSize = form.watch("font-size");
 
   async function handleClick() {
     if (!editorRef.current) return;
